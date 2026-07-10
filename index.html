@@ -1312,6 +1312,38 @@
 
     .verification-footer > div { display: flex; justify-content: center; gap: 32px; color: #818a95; }
 
+    .github-project-link {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 20;
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 11px;
+      border: 1px solid #d9dee7;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 4px 14px rgba(32, 46, 66, 0.08);
+      color: #4e5967;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1;
+      text-decoration: none;
+      transition: border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .github-project-link:hover {
+      border-color: #9da9b7;
+      box-shadow: 0 6px 18px rgba(32, 46, 66, 0.13);
+      color: #1f2935;
+    }
+
+    .github-project-link:focus-visible {
+      outline: 3px solid rgba(47, 124, 224, 0.32);
+      outline-offset: 2px;
+    }
+
     @media (max-width: 1150px) {
       .verification-workspace {
         width: min(920px, calc(100% - 40px));
@@ -1352,6 +1384,7 @@
       .verify-btn { min-width: 104px; min-height: 43px; font-size: 16px; }
       .failure-dialog { padding: 16px; }
       .verification-footer { min-height: 96px; font-size: 12px; }
+      .github-project-link { right: 12px; bottom: 12px; min-height: 32px; font-size: 12px; }
     }
   </style>
 </head>
@@ -1458,6 +1491,8 @@
       <span>不收集或上传你的选择记录</span>
       <div><span>隐私政策</span><span>使用条款</span></div>
     </footer>
+
+    <a class="github-project-link" href="https://github.com/amos-neon-nidus/pass-gate-prank" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 上查看本项目源代码" title="在 GitHub 上查看源代码">GitHub</a>
   </main>
 
   <script>
