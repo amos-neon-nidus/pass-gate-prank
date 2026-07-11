@@ -1145,8 +1145,8 @@
     }
 
     .failure-copy strong { display: block; font-size: 16px; }
-    .failure-copy span,
-    .failure-copy small { display: block; margin-top: 5px; color: #4e5967; font-size: 13px; line-height: 1.45; }
+    .failure-copy span { display: block; margin-top: 5px; color: #4e5967; font-size: 13px; line-height: 1.45; }
+    .failure-dialog.is-robot .failure-copy span { color: #aa241c; font-size: 19px; font-weight: 700; line-height: 1.25; }
 
     .retry-btn {
       grid-column: 1 / -1;
@@ -1277,25 +1277,11 @@
     .security-note-card h2 { margin-bottom: 12px; }
 
     .security-note-card > p {
-      margin: 0 0 18px;
-      padding-bottom: 17px;
+      margin: 0;
       color: #687280;
-      border-bottom: 1px solid #e5e8ed;
       font-size: 13px;
       line-height: 1.65;
     }
-
-    .security-note-rule {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      color: #55606e;
-      font-size: 13px;
-      line-height: 1.55;
-    }
-
-    .security-note-rule + .security-note-rule { margin-top: 11px; }
-    .security-note-rule span { width: 6px; height: 6px; border-radius: 50%; background: #3d82d9; }
 
     .verification-footer {
       min-height: 106px;
@@ -1439,8 +1425,7 @@
                 <div class="failure-icon" aria-hidden="true">!</div>
                 <div class="failure-copy">
                   <strong id="failureTitle">验证未通过</strong>
-                  <span id="failureText">检测结果：您是人机。请重新完成验证。</span>
-                  <small id="failureReason">原因：点击轨迹过于稳定</small>
+                  <span id="failureText">请重新验证。</span>
                 </div>
                 <button class="retry-btn" id="retryBtn" type="button">重新验证</button>
               </div>
@@ -1482,8 +1467,6 @@
         </div>
         <h2>安全提示</h2>
         <p>验证仅在当前页面完成，不会要求登录或提交个人信息。</p>
-        <div class="security-note-rule"><span></span>图片可随时刷新</div>
-        <div class="security-note-rule"><span></span>完成选择后提交验证</div>
       </aside>
     </section>
 
@@ -1524,18 +1507,6 @@
     ];
 
     const prompts = ["人行横道", "交通信号灯", "小汽车", "行人", "道路标志", "自行车"];
-    const statusMessages = [
-      ["i", "验证未通过。检测结果：您是人机。请重新完成验证。"],
-      ["i", "验证未通过，请重新选择图片后再次提交。"],
-      ["i", "当前操作未通过安全验证，请重新完成验证。"],
-      ["i", "系统未能确认真人访问特征，请再次验证。"]
-    ];
-    const failureReasons = [
-      "点击轨迹过于稳定",
-      "识别速度异常接近自动化行为",
-      "选择结果与人类误差模型不匹配",
-      "操作行为缺少正常犹豫时间"
-    ];
 
     const grid = document.getElementById("captchaGrid");
     const panel = document.getElementById("captchaPanel");
@@ -1549,7 +1520,6 @@
     const statusText = document.getElementById("statusText");
     const statusEmoji = document.getElementById("statusEmoji");
     const failureText = document.getElementById("failureText");
-    const failureReason = document.getElementById("failureReason");
     const checkSteps = [...document.querySelectorAll("[data-check-step]")];
 
     let attempts = 0;
@@ -1651,11 +1621,10 @@
 
       setTimeout(() => {
         attempts += 1;
-        const reason = failureReasons[Math.floor(Math.random() * failureReasons.length)];
-        const [emoji, message] = statusMessages[(attempts - 1) % statusMessages.length];
-        failureText.textContent = "检测结果：您是人机。请重新完成验证。";
-        failureReason.textContent = `原因：${reason}`;
-        setStatus(emoji, message);
+        const isRobotResult = attempts >= 3;
+        failureModal.querySelector(".failure-dialog").classList.toggle("is-robot", isRobotResult);
+        failureText.textContent = isRobotResult ? "检验结果：您是机器人。" : "请重新验证。";
+        setStatus("i", "验证未通过，请重新验证。");
 
         failureModal.classList.add("show");
         verifyBtn.textContent = "验证";
