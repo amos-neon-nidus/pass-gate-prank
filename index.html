@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-Hant">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light" />
-  <title>安全验证</title>
+  <title>安全驗證</title>
   <style>
     :root {
       --ink: #1f2937;
@@ -915,7 +915,70 @@
       border: 0;
       background: transparent;
       font-size: 14px;
-      cursor: default;
+      cursor: pointer;
+    }
+
+    .header-action:hover { color: #1f2935; }
+
+    .header-action:focus-visible,
+    .language-option:focus-visible,
+    .help-close:focus-visible,
+    .help-confirm:focus-visible {
+      outline: 3px solid rgba(47, 124, 224, 0.3);
+      outline-offset: 2px;
+    }
+
+    .language-picker { position: relative; }
+
+    .language-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .language-chevron {
+      font-size: 12px;
+      transition: transform 160ms ease;
+    }
+
+    .language-toggle[aria-expanded="true"] .language-chevron { transform: rotate(180deg); }
+
+    .language-menu {
+      position: absolute;
+      top: calc(100% + 7px);
+      right: 0;
+      z-index: 30;
+      width: 154px;
+      padding: 6px;
+      border: 1px solid #d7dce4;
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(31, 41, 55, 0.14);
+    }
+
+    .language-menu[hidden],
+    .help-modal[hidden] { display: none; }
+
+    .language-option {
+      width: 100%;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 4px;
+      color: #3e4651;
+      background: transparent;
+      font-size: 13px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .language-option:hover { background: #f3f6fa; }
+    .language-option[aria-checked="true"] { color: #246fcf; background: #edf5ff; }
+    .language-check { visibility: hidden; }
+    .language-option[aria-checked="true"] .language-check { visibility: visible; }
     }
 
     .verification-workspace {
@@ -1330,6 +1393,84 @@
       outline-offset: 2px;
     }
 
+    .help-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(35, 43, 54, 0.42);
+    }
+
+    .help-dialog {
+      position: relative;
+      width: min(440px, 100%);
+      padding: 28px;
+      border: 1px solid #d7dce4;
+      border-radius: 7px;
+      background: #fff;
+      box-shadow: 0 18px 48px rgba(27, 38, 53, 0.2);
+    }
+
+    .help-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      color: #66717d;
+      background: transparent;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .help-close:hover { color: #2d343e; background: #f1f4f8; }
+
+    .help-dialog h2 {
+      margin: 0 40px 14px 0;
+      color: #252d38;
+      font-size: 21px;
+      font-weight: 650;
+    }
+
+    .help-dialog p {
+      margin: 0;
+      color: #515c69;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .help-callout {
+      margin-top: 18px;
+      padding: 13px 15px;
+      border-left: 3px solid #347bd6;
+      background: #f1f6fc;
+      color: #2d5f9e;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .help-confirm {
+      width: 100%;
+      min-height: 42px;
+      margin-top: 22px;
+      border: 0;
+      border-radius: 4px;
+      color: #fff;
+      background: #347bd6;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .help-confirm:hover { background: #2e70c5; }
+
     @media (max-width: 1150px) {
       .verification-workspace {
         width: min(920px, calc(100% - 40px));
@@ -1371,6 +1512,8 @@
       .failure-dialog { padding: 16px; }
       .verification-footer { min-height: 96px; font-size: 12px; }
       .github-project-link { right: 12px; bottom: 12px; min-height: 32px; font-size: 12px; }
+      .help-modal { padding: 16px; }
+      .help-dialog { padding: 24px 20px 20px; }
     }
   </style>
 </head>
@@ -1381,41 +1524,51 @@
         <span class="verification-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3 19 6v5c0 4.4-2.6 7.8-7 10-4.4-2.2-7-5.6-7-10V6l7-3Z"/><path d="m9.1 12 1.9 1.9 4-4.2"/></svg>
         </span>
-        <span>通行验证</span>
+        <span data-i18n="brand">通行驗證</span>
       </div>
-      <div class="verification-top-actions" aria-label="页面工具">
-        <button type="button" class="header-action">简体中文 <span aria-hidden="true">⌄</span></button>
-        <button type="button" class="header-action">帮助</button>
+      <div class="verification-top-actions" aria-label="頁面工具" data-i18n-aria-label="pageTools">
+        <div class="language-picker" id="languagePicker">
+          <button type="button" class="header-action language-toggle" id="languageButton" aria-haspopup="menu" aria-expanded="false">
+            <span id="languageLabel">繁體中文</span>
+            <span class="language-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="language-menu" id="languageMenu" role="menu" aria-label="語言" data-i18n-aria-label="languageMenu" hidden>
+            <button type="button" class="language-option" role="menuitemradio" data-locale="zh-Hant" aria-checked="true"><span>繁體中文</span><span class="language-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="language-option" role="menuitemradio" data-locale="zh-Hans" aria-checked="false"><span>简体中文</span><span class="language-check" aria-hidden="true">✓</span></button>
+            <button type="button" class="language-option" role="menuitemradio" data-locale="en" aria-checked="false"><span>English</span><span class="language-check" aria-hidden="true">✓</span></button>
+          </div>
+        </div>
+        <button type="button" class="header-action" id="headerHelpBtn" data-i18n="help">幫助</button>
       </div>
     </header>
 
-    <section class="verification-workspace" aria-label="安全验证">
+    <section class="verification-workspace" aria-label="安全驗證" data-i18n-aria-label="securityVerification">
       <aside class="access-check-card">
-        <h1>访问检查</h1>
-        <p>为确保您的访问安全，当前请求需要完成验证。</p>
+        <h1 data-i18n="accessCheck">存取檢查</h1>
+        <p data-i18n="accessDescription">為了確保您的存取安全，目前請求需要完成驗證。</p>
         <div class="check-steps">
           <div class="check-step is-complete" data-check-step>
             <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 19 6v5c0 4.4-2.6 7.8-7 10-4.4-2.2-7-5.6-7-10V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
-            <span>连接检查</span><b>已完成</b>
+            <span data-i18n="connectionCheck">連線檢查</span><b>已完成</b>
           </div>
           <div class="check-step is-current" data-check-step>
             <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg></span>
-            <span>安全挑战</span><b>进行中</b>
+            <span data-i18n="securityChallenge">安全挑戰</span><b>進行中</b>
           </div>
           <div class="check-step" data-check-step>
             <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg></span>
-            <span>完成验证</span><b>待完成</b>
+            <span data-i18n="completeVerification">完成驗證</span><b>待完成</b>
           </div>
         </div>
       </aside>
 
-      <section class="verification-layer" aria-label="图片验证">
+      <section class="verification-layer" aria-label="圖片驗證" data-i18n-aria-label="imageVerification">
       <div class="captcha-shell">
-        <section class="captcha-panel" id="captchaPanel" aria-label="图片验证码">
+        <section class="captcha-panel" id="captchaPanel" aria-label="圖片驗證碼" data-i18n-aria-label="imageCaptcha">
           <div class="captcha-header">
-            <div class="captcha-overline">请选择所有包含</div>
-            <div class="challenge-title"><span id="challengeTitle">人行横道</span></div>
-            <div class="captcha-instruction">如果没有符合条件的图片，请跳过</div>
+            <div class="captcha-overline" data-i18n="selectAllContaining">請選擇所有包含</div>
+            <div class="challenge-title"><span id="challengeTitle">人行橫道</span></div>
+            <div class="captcha-instruction" data-i18n="noMatchingImages">如果沒有符合條件的圖片，請略過</div>
           </div>
 
           <div class="captcha-puzzle-area">
@@ -1424,38 +1577,38 @@
               <div class="failure-dialog">
                 <div class="failure-icon" aria-hidden="true">!</div>
                 <div class="failure-copy">
-                  <strong id="failureTitle">验证未通过</strong>
-                  <span id="failureText">请重新验证。</span>
+                  <strong id="failureTitle" data-i18n="verificationFailed">驗證未通過</strong>
+                  <span id="failureText">請重新驗證。</span>
                 </div>
-                <button class="retry-btn" id="retryBtn" type="button">重新验证</button>
+                <button class="retry-btn" id="retryBtn" type="button" data-i18n="retry">重新驗證</button>
               </div>
             </div>
           </div>
 
           <div class="captcha-footer">
-            <div class="tool-row" aria-label="验证码工具">
-              <button class="tool-btn" id="refreshBtn" type="button" aria-label="刷新图片" title="刷新图片">
+            <div class="tool-row" aria-label="驗證碼工具" data-i18n-aria-label="captchaTools">
+              <button class="tool-btn" id="refreshBtn" type="button" aria-label="重新整理圖片" title="重新整理圖片" data-i18n-aria-label="refreshImages" data-i18n-title="refreshImages">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                   <path d="M20 6v5h-5"/><path d="M4 18v-5h5"/><path d="M6.1 9A7 7 0 0 1 18.7 7.1L20 11M4 13l1.3 3.9A7 7 0 0 0 17.9 15"/>
                 </svg>
               </button>
-              <button class="tool-btn" id="audioBtn" type="button" aria-label="语音验证" title="语音验证">
+              <button class="tool-btn" id="audioBtn" type="button" aria-label="語音驗證" title="語音驗證" data-i18n-aria-label="audioVerification" data-i18n-title="audioVerification">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                   <path d="M4 14v-2a8 8 0 0 1 16 0v2"/><path d="M18 19h-2v-7h4v5a2 2 0 0 1-2 2ZM6 19h2v-7H4v5a2 2 0 0 0 2 2Z"/>
                 </svg>
               </button>
-              <button class="tool-btn" id="infoBtn" type="button" aria-label="帮助" title="帮助">
+              <button class="tool-btn" id="infoBtn" type="button" aria-label="幫助" title="幫助" data-i18n-aria-label="help" data-i18n-title="help">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                   <circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/>
                 </svg>
               </button>
             </div>
-            <button class="verify-btn" id="verifyBtn" type="button">验证</button>
+            <button class="verify-btn" id="verifyBtn" type="button" data-i18n="verify">驗證</button>
           </div>
         </section>
       </div>
 
-      <div class="support-note" id="statusText" aria-live="polite">请根据图片内容完成当前验证。</div>
+      <div class="support-note" id="statusText" aria-live="polite">請根據圖片內容完成目前驗證。</div>
       <div class="hidden-metrics" aria-hidden="true">
         <span id="statusEmoji">i</span>
       </div>
@@ -1465,17 +1618,27 @@
         <div class="security-note-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 19 6v5c0 4.4-2.6 7.8-7 10-4.4-2.2-7-5.6-7-10V6l7-3Z"/><path d="M9 12h6M12 9v6"/></svg>
         </div>
-        <h2>安全提示</h2>
-        <p>验证仅在当前页面完成，不会要求登录或提交个人信息。</p>
+        <h2 data-i18n="securityTip">安全提示</h2>
+        <p data-i18n="securityDescription">驗證只在目前頁面完成，不會要求登入或提交個人資訊。</p>
       </aside>
     </section>
 
     <footer class="verification-footer">
-      <span>不收集或上传你的选择记录</span>
-      <div><span>隐私政策</span><span>使用条款</span></div>
+      <span data-i18n="noCollection">不會收集或上傳你的選擇紀錄</span>
+      <div><span data-i18n="privacyPolicy">隱私權政策</span><span data-i18n="terms">使用條款</span></div>
     </footer>
 
-    <a class="github-project-link" href="https://github.com/amos-neon-nidus/pass-gate-prank" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 上查看本项目源代码" title="在 GitHub 上查看源代码">GitHub</a>
+    <a class="github-project-link" href="https://github.com/amos-neon-nidus/pass-gate-prank" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 上檢視本專案原始碼" title="在 GitHub 上檢視原始碼" data-i18n-aria-label="githubLabel" data-i18n-title="githubTitle">GitHub</a>
+
+    <div class="help-modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpDialogTitle" hidden>
+      <div class="help-dialog">
+        <button type="button" class="help-close" id="helpCloseBtn" aria-label="關閉說明" data-i18n-aria-label="closeHelp">×</button>
+        <h2 id="helpDialogTitle" data-i18n="helpTitle">關於這個頁面</h2>
+        <p data-i18n="helpBody">這是一個惡作劇驗證頁面。無論選擇哪些圖片，驗證都不會通過；第三次驗證時，系統會顯示「您是機器人」。本頁面不會收集或上傳任何資料。</p>
+        <div class="help-callout" data-i18n="helpCallout">快拿去整蠱你的朋友吧～</div>
+        <button type="button" class="help-confirm" id="helpConfirmBtn" data-i18n="gotIt">知道了</button>
+      </div>
+    </div>
   </main>
 
   <script>
@@ -1508,7 +1671,161 @@
       ])
     ];
 
-    const prompts = ["人行横道", "交通信号灯", "小汽车", "行人", "道路标志", "自行车"];
+    const translations = {
+      "zh-Hant": {
+        documentTitle: "安全驗證",
+        languageName: "繁體中文",
+        languageMenu: "語言",
+        brand: "通行驗證",
+        pageTools: "頁面工具",
+        help: "幫助",
+        securityVerification: "安全驗證",
+        accessCheck: "存取檢查",
+        accessDescription: "為了確保您的存取安全，目前請求需要完成驗證。",
+        connectionCheck: "連線檢查",
+        completed: "已完成",
+        securityChallenge: "安全挑戰",
+        inProgress: "進行中",
+        completeVerification: "完成驗證",
+        pending: "待完成",
+        verifying: "驗證中",
+        imageVerification: "圖片驗證",
+        imageCaptcha: "圖片驗證碼",
+        selectAllContaining: "請選擇所有包含",
+        noMatchingImages: "如果沒有符合條件的圖片，請略過",
+        verificationFailed: "驗證未通過",
+        retryPrompt: "請重新驗證。",
+        robotResult: "檢驗結果：您是機器人。",
+        retry: "重新驗證",
+        captchaTools: "驗證碼工具",
+        refreshImages: "重新整理圖片",
+        audioVerification: "語音驗證",
+        verify: "驗證",
+        verifyingButton: "正在驗證...",
+        initialStatus: "請根據圖片內容完成目前驗證。",
+        verifyingStatus: "正在驗證，請稍候。",
+        failedStatus: "驗證未通過，請重新驗證。",
+        switchedGroupStatus: "已切換至第 {group} 組圖片，請重新完成驗證。",
+        refreshedStatus: "圖片已重新整理，請重新選擇符合條件的圖片。",
+        audioUnavailableStatus: "語音驗證暫時無法使用，請繼續完成圖片驗證。",
+        securityTip: "安全提示",
+        securityDescription: "驗證只在目前頁面完成，不會要求登入或提交個人資訊。",
+        noCollection: "不會收集或上傳你的選擇紀錄",
+        privacyPolicy: "隱私權政策",
+        terms: "使用條款",
+        githubLabel: "在 GitHub 上檢視本專案原始碼",
+        githubTitle: "在 GitHub 上檢視原始碼",
+        imageTile: "驗證圖片 {number}",
+        helpTitle: "關於這個頁面",
+        helpBody: "這是一個惡作劇驗證頁面。無論選擇哪些圖片，驗證都不會通過；第三次驗證時，系統會顯示「您是機器人」。本頁面不會收集或上傳任何資料。",
+        helpCallout: "快拿去整蠱你的朋友吧～",
+        gotIt: "知道了",
+        closeHelp: "關閉說明",
+        prompts: ["人行橫道", "交通號誌", "小汽車", "行人", "道路標誌", "自行車"]
+      },
+      "zh-Hans": {
+        documentTitle: "安全验证",
+        languageName: "简体中文",
+        languageMenu: "语言",
+        brand: "通行验证",
+        pageTools: "页面工具",
+        help: "帮助",
+        securityVerification: "安全验证",
+        accessCheck: "访问检查",
+        accessDescription: "为确保您的访问安全，当前请求需要完成验证。",
+        connectionCheck: "连接检查",
+        completed: "已完成",
+        securityChallenge: "安全挑战",
+        inProgress: "进行中",
+        completeVerification: "完成验证",
+        pending: "待完成",
+        verifying: "验证中",
+        imageVerification: "图片验证",
+        imageCaptcha: "图片验证码",
+        selectAllContaining: "请选择所有包含",
+        noMatchingImages: "如果没有符合条件的图片，请跳过",
+        verificationFailed: "验证未通过",
+        retryPrompt: "请重新验证。",
+        robotResult: "检验结果：您是机器人。",
+        retry: "重新验证",
+        captchaTools: "验证码工具",
+        refreshImages: "刷新图片",
+        audioVerification: "语音验证",
+        verify: "验证",
+        verifyingButton: "正在验证...",
+        initialStatus: "请根据图片内容完成当前验证。",
+        verifyingStatus: "正在验证，请稍候。",
+        failedStatus: "验证未通过，请重新验证。",
+        switchedGroupStatus: "已切换到第 {group} 组图片，请重新完成验证。",
+        refreshedStatus: "图片已刷新，请重新选择符合条件的图片。",
+        audioUnavailableStatus: "语音验证暂不可用，请继续完成图片验证。",
+        securityTip: "安全提示",
+        securityDescription: "验证仅在当前页面完成，不会要求登录或提交个人信息。",
+        noCollection: "不收集或上传你的选择记录",
+        privacyPolicy: "隐私政策",
+        terms: "使用条款",
+        githubLabel: "在 GitHub 上查看本项目源代码",
+        githubTitle: "在 GitHub 上查看源代码",
+        imageTile: "验证图片 {number}",
+        helpTitle: "关于这个页面",
+        helpBody: "这是一个恶作剧验证网页。无论选择哪些图片，验证都不会通过；第三次验证时，系统会显示“您是机器人”。本页面不会收集或上传任何数据。",
+        helpCallout: "快拿去整蛊你的朋友吧~",
+        gotIt: "知道了",
+        closeHelp: "关闭说明",
+        prompts: ["人行横道", "交通信号灯", "小汽车", "行人", "道路标志", "自行车"]
+      },
+      en: {
+        documentTitle: "Security Verification",
+        languageName: "English",
+        languageMenu: "Language",
+        brand: "Access Verification",
+        pageTools: "Page tools",
+        help: "Help",
+        securityVerification: "Security verification",
+        accessCheck: "Access check",
+        accessDescription: "To protect your access, please complete this verification.",
+        connectionCheck: "Connection check",
+        completed: "Completed",
+        securityChallenge: "Security challenge",
+        inProgress: "In progress",
+        completeVerification: "Complete verification",
+        pending: "Pending",
+        verifying: "Verifying",
+        imageVerification: "Image verification",
+        imageCaptcha: "Image CAPTCHA",
+        selectAllContaining: "Select all images containing",
+        noMatchingImages: "If there are none, skip",
+        verificationFailed: "Verification failed",
+        retryPrompt: "Please try again.",
+        robotResult: "Result: You are a robot.",
+        retry: "Try again",
+        captchaTools: "CAPTCHA tools",
+        refreshImages: "Refresh images",
+        audioVerification: "Audio verification",
+        verify: "Verify",
+        verifyingButton: "Verifying...",
+        initialStatus: "Complete the verification based on the images.",
+        verifyingStatus: "Verifying, please wait.",
+        failedStatus: "Verification failed. Please try again.",
+        switchedGroupStatus: "Switched to image set {group}. Please verify again.",
+        refreshedStatus: "Images refreshed. Please select all matching images again.",
+        audioUnavailableStatus: "Audio verification is unavailable. Continue with the image challenge.",
+        securityTip: "Security notice",
+        securityDescription: "Verification takes place only on this page. No login or personal information is required.",
+        noCollection: "We do not collect or upload your selections",
+        privacyPolicy: "Privacy",
+        terms: "Terms",
+        githubLabel: "View this project's source code on GitHub",
+        githubTitle: "View source code on GitHub",
+        imageTile: "Verification image {number}",
+        helpTitle: "About this page",
+        helpBody: "This is a prank verification page. No matter which images you choose, verification will always fail. On the third attempt, it tells you that you are a robot. This page does not collect or upload any data.",
+        helpCallout: "Now go prank your friends!",
+        gotIt: "Got it",
+        closeHelp: "Close help",
+        prompts: ["crosswalks", "traffic lights", "cars", "pedestrians", "road signs", "bicycles"]
+      }
+    };
 
     const grid = document.getElementById("captchaGrid");
     const panel = document.getElementById("captchaPanel");
@@ -1523,10 +1840,80 @@
     const statusEmoji = document.getElementById("statusEmoji");
     const failureText = document.getElementById("failureText");
     const checkSteps = [...document.querySelectorAll("[data-check-step]")];
+    const languagePicker = document.getElementById("languagePicker");
+    const languageButton = document.getElementById("languageButton");
+    const languageLabel = document.getElementById("languageLabel");
+    const languageMenu = document.getElementById("languageMenu");
+    const languageOptions = [...document.querySelectorAll("[data-locale]")];
+    const headerHelpBtn = document.getElementById("headerHelpBtn");
+    const helpModal = document.getElementById("helpModal");
+    const helpCloseBtn = document.getElementById("helpCloseBtn");
+    const helpConfirmBtn = document.getElementById("helpConfirmBtn");
 
     let attempts = 0;
     let galleryGroupIndex = 0;
     let isVerifying = false;
+    let currentLocale = "zh-Hant";
+    let currentStatus = { key: "initialStatus", params: {} };
+    let statusTimer;
+    let helpReturnFocus;
+
+    function t(key, params = {}) {
+      const localeMessages = translations[currentLocale] || translations["zh-Hant"];
+      const value = localeMessages[key] ?? translations["zh-Hant"][key] ?? key;
+      if (typeof value !== "string") return value;
+      return value.replace(/\{(\w+)\}/g, (match, name) => params[name] ?? match);
+    }
+
+    function updateStepLabels() {
+      checkSteps.forEach((step) => {
+        const key = step.classList.contains("is-complete")
+          ? "completed"
+          : step.classList.contains("is-running")
+            ? "verifying"
+            : step.classList.contains("is-current")
+              ? "inProgress"
+              : "pending";
+        step.querySelector("b").textContent = t(key);
+      });
+    }
+
+    function updateTileLabels() {
+      [...grid.querySelectorAll(".tile")].forEach((tile, index) => {
+        tile.setAttribute("aria-label", t("imageTile", { number: index + 1 }));
+      });
+    }
+
+    function applyLanguage(locale) {
+      if (!translations[locale]) return;
+      currentLocale = locale;
+      document.documentElement.lang = locale;
+      document.title = t("documentTitle");
+      languageLabel.textContent = t("languageName");
+
+      document.querySelectorAll("[data-i18n]").forEach((element) => {
+        element.textContent = t(element.dataset.i18n);
+      });
+      document.querySelectorAll("[data-i18n-aria-label]").forEach((element) => {
+        element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+      });
+      document.querySelectorAll("[data-i18n-title]").forEach((element) => {
+        element.setAttribute("title", t(element.dataset.i18nTitle));
+      });
+
+      languageOptions.forEach((option) => {
+        option.setAttribute("aria-checked", option.dataset.locale === locale ? "true" : "false");
+      });
+
+      const prompts = t("prompts");
+      challengeTitle.textContent = prompts[(attempts + galleryGroupIndex) % prompts.length];
+      failureText.textContent = attempts >= 3 ? t("robotResult") : t("retryPrompt");
+      verifyBtn.textContent = isVerifying ? t("verifyingButton") : t("verify");
+      statusText.textContent = t(currentStatus.key, currentStatus.params);
+      statusText.style.opacity = "1";
+      updateStepLabels();
+      updateTileLabels();
+    }
 
     function shuffle(items) {
       const result = [...items];
@@ -1539,11 +1926,11 @@
 
     function renderTiles() {
       grid.innerHTML = "";
-      shuffle(galleryGroups[galleryGroupIndex]).forEach((item) => {
+      shuffle(galleryGroups[galleryGroupIndex]).forEach((item, index) => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "tile";
-        button.setAttribute("aria-label", `图片：${item.name}`);
+        button.setAttribute("aria-label", t("imageTile", { number: index + 1 }));
         button.setAttribute("aria-pressed", "false");
         const photo = document.createElement("span");
         photo.className = "tile-photo";
@@ -1565,11 +1952,13 @@
       });
     }
 
-    function setStatus(emoji, text) {
+    function setStatus(emoji, key, params = {}) {
+      currentStatus = { key, params };
+      clearTimeout(statusTimer);
       statusText.style.opacity = "0";
-      setTimeout(() => {
+      statusTimer = setTimeout(() => {
         statusEmoji.textContent = emoji;
-        statusText.textContent = text;
+        statusText.textContent = t(currentStatus.key, currentStatus.params);
         statusText.style.opacity = "1";
       }, 130);
     }
@@ -1581,10 +1970,10 @@
       step.classList.remove("is-complete", "is-current", "is-running");
       if (state !== "pending") step.classList.add(`is-${state}`);
       step.querySelector("b").textContent = {
-        complete: "已完成",
-        current: "进行中",
-        running: "验证中",
-        pending: "待完成"
+        complete: t("completed"),
+        current: t("inProgress"),
+        running: t("verifying"),
+        pending: t("pending")
       }[state];
     }
 
@@ -1608,6 +1997,7 @@
     }
 
     function changeChallenge() {
+      const prompts = t("prompts");
       challengeTitle.textContent = prompts[(attempts + galleryGroupIndex) % prompts.length];
       renderTiles();
     }
@@ -1617,19 +2007,19 @@
       isVerifying = true;
       failureModal.classList.remove("show");
       verifyBtn.disabled = true;
-      verifyBtn.textContent = "正在验证...";
+      verifyBtn.textContent = t("verifyingButton");
       animateCheckSteps();
-      setStatus("i", "正在验证，请稍候。");
+      setStatus("i", "verifyingStatus");
 
       setTimeout(() => {
         attempts += 1;
         const isRobotResult = attempts >= 3;
         failureModal.querySelector(".failure-dialog").classList.toggle("is-robot", isRobotResult);
-        failureText.textContent = isRobotResult ? "检验结果：您是机器人。" : "请重新验证。";
-        setStatus("i", "验证未通过，请重新验证。");
+        failureText.textContent = isRobotResult ? t("robotResult") : t("retryPrompt");
+        setStatus("i", "failedStatus");
 
         failureModal.classList.add("show");
-        verifyBtn.textContent = "验证";
+        verifyBtn.textContent = t("verify");
         verifyBtn.disabled = false;
         isVerifying = false;
       }, 1120);
@@ -1642,24 +2032,87 @@
       galleryGroupIndex = (galleryGroupIndex + 1) % galleryGroups.length;
       resetCheckSteps();
       changeChallenge();
-      setStatus("i", `已切换到第 ${galleryGroupIndex + 1} 组图片，请重新完成验证。`);
+      setStatus("i", "switchedGroupStatus", { group: galleryGroupIndex + 1 });
     });
 
     refreshBtn.addEventListener("click", () => {
       changeChallenge();
-      setStatus("i", "图片已刷新，请重新选择符合条件的图片。");
+      setStatus("i", "refreshedStatus");
     });
 
     audioBtn.addEventListener("click", () => {
-      setStatus("i", "语音验证暂不可用，请继续完成图片验证。");
+      setStatus("i", "audioUnavailableStatus");
     });
 
-    infoBtn.addEventListener("click", () => {
-      setStatus("i", "帮助：选择所有符合题目要求的图片，然后点击验证。");
+    function closeLanguageMenu() {
+      languageMenu.hidden = true;
+      languageButton.setAttribute("aria-expanded", "false");
+    }
+
+    function openHelp() {
+      closeLanguageMenu();
+      helpReturnFocus = document.activeElement;
+      helpModal.hidden = false;
+      helpConfirmBtn.focus();
+    }
+
+    function closeHelp() {
+      helpModal.hidden = true;
+      if (helpReturnFocus instanceof HTMLElement) helpReturnFocus.focus();
+    }
+
+    languageButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const shouldOpen = languageMenu.hidden;
+      languageMenu.hidden = !shouldOpen;
+      languageButton.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+      if (shouldOpen) {
+        languageMenu.querySelector('[aria-checked="true"]').focus();
+      }
+    });
+
+    languageOptions.forEach((option) => {
+      option.addEventListener("click", () => {
+        applyLanguage(option.dataset.locale);
+        closeLanguageMenu();
+        languageButton.focus();
+      });
+    });
+
+    languageMenu.addEventListener("keydown", (event) => {
+      if (!["ArrowDown", "ArrowUp"].includes(event.key)) return;
+      event.preventDefault();
+      const currentIndex = languageOptions.indexOf(document.activeElement);
+      const direction = event.key === "ArrowDown" ? 1 : -1;
+      const nextIndex = (currentIndex + direction + languageOptions.length) % languageOptions.length;
+      languageOptions[nextIndex].focus();
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!languagePicker.contains(event.target)) closeLanguageMenu();
+    });
+
+    headerHelpBtn.addEventListener("click", openHelp);
+    infoBtn.addEventListener("click", openHelp);
+    helpCloseBtn.addEventListener("click", closeHelp);
+    helpConfirmBtn.addEventListener("click", closeHelp);
+    helpModal.addEventListener("click", (event) => {
+      if (event.target === helpModal) closeHelp();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      if (!helpModal.hidden) {
+        closeHelp();
+      } else {
+        closeLanguageMenu();
+        languageButton.focus();
+      }
     });
 
     resetCheckSteps();
     renderTiles();
+    applyLanguage("zh-Hant");
   </script>
 </body>
 </html>
